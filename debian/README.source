@@ -36,7 +36,7 @@ Now the actual maintenance.
 * double check
 * git tag debian/version
 * publish
-** `git push` your
+** `gbp push` your work
 ** debian sign and `dput` if you have the privilege ...
 
 The maintenance more in shell commands
@@ -58,9 +58,7 @@ The maintenance more in shell commands
   echo check again :-)
   git tag | grep debian | tail -n 3 # to see previous tags
   git tag debian/1%${VER}-1
-  git push origin master
-  git push origin upstream # because updated with `gbp import-orig`
-  git push --tags
+  gbp push  # which pushes branches and tags
   #
   # debrsign -kGPGkey host_with_GPGkey ../radvd_${VER}-1_armhf.changes
   # dput ../radvd_${VER}-1_armhf.changes
