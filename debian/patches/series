@@ -3,4 +3,3 @@
 pidfile_at_slash_run
 remove_linux_if_arp_h_from_configure_ac
 kfreebsd.patch
-fix-implicit-function-declaration.patch

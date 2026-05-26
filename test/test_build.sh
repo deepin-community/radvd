@@ -34,7 +34,7 @@ case $1 in
 	opensuse)
 		zypper refresh
 		zypper --non-interactive install -t pattern devel_C_C++
-		zypper --non-interactive install check-devel clang sudo libbsd0 libbsd-devel
+		zypper --non-interactive install check-devel clang sudo libbsd0 libbsd-devel autoconf automake make bison flex xz
 		;;
 	ubuntu)
 		sudo apt update
@@ -49,6 +49,6 @@ esac
 ./autogen.sh
 ./configure --with-check
 make -j
-make check
-make dist-xz
-sudo make install
+make -j check
+make -j dist-xz
+sudo make -j install

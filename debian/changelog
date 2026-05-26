@@ -1,3 +1,49 @@
+radvd (1:2.21-0deepin1) unstable; urgency=medium
+
+  * feat: release v2.21
+  * feat: harden radvdump (CVE-2026-48715)
+  * feat: RFC8319 support: Increase max AdvDefaultLifetime and MaxRtrAdvInterval
+  * feat: Add DHCPv6-PD preferred flag
+  * build: docker updates
+  * build: README moved
+  * git ignore more
+  * ci: recent fedora needs awk
+  * ci: add stock GitHub CodeQL scanning before customization
+  * ci: setup codeql build-mode=manual
+  * build: update configure.ac using autoupdate-2.69 from ubuntu20.04
+  * ci: workaround makefile dep ordering issue
+  * ci: more autoconf for codeql
+  * ci: always parallel build
+  * ci: bleeding edge autoupdate causes large codeql failure
+  * ci: stricter build triggers
+  * ci: bsd make != linux make
+  * build: correctness & testcase for CodeQL
+  * test: increase snprintf safety
+  * fix: improve file checks for procfs knobs
+  * ci: lock down workflow permissions
+  * feat: allow libc strlcpy
+  * ci: fix non-immutable Action
+  * build: bsd has libcheck available as well
+  * ci: improve BSD workflow to run tests
+  * fix: make libcheck fatal if missing with --with-check
+  * build: drop ubuntu20.04 due to EOL
+  * chore: debug max_ra_option_size calculation
+  * chore: skip ND_OPT_CAPTIVE_PORTAL parsing in received main radvd
+  * ci: test on ubuntu-26.04
+  * refactor: make drop_root_privileges reusable
+  * ix: support incoming jumbo packets
+  * doc: update reporting location
+  * ci: ensure autoconf+automake for opensuse
+  * ci: ensure make for opensuse
+  * ci: ensure bison+flex for opensuse
+  * ci: disable ubuntu-26.04 target
+  * ci: ensure xz for opensuse
+  * doc: improve AUTHOR tracking and contact info
+  * doc: SECURITY
+  * Avoid libbsd header with libc strlcpy
+
+ -- WangYuli <wangyl5933@chinaunicom.cn>  Tue, 26 May 2026 09:40:25 +0800
+
 radvd (1:2.20-1) unstable; urgency=medium
 
   * New upstream release  Closes: #1088102

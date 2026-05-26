@@ -9,7 +9,7 @@
  *
  *   The license which is distributed with this software in the file COPYRIGHT
  *   applies to this software. If your distribution is missing this file, you
- *   may request it from <reubenhwk@gmail.com>.
+ *   may request it from https://github.com/radvd-project/radvd/issues
  *
  */
 
@@ -392,6 +392,7 @@ static void process_ra(struct Interface *iface, unsigned char *msg, int len, str
 			break;
 		}
 		case ND_OPT_PREF64:
+		case ND_OPT_CAPTIVE_PORTAL:
 			/* not checked */
 			break;
 		default:

@@ -9,7 +9,7 @@
  *
  *   The license which is distributed with this software in the file COPYRIGHT
  *   applies to this software. If your distribution is missing this file, you
- *   may request it from <reubenhwk@gmail.com>.
+ *   may request it from https://github.com/radvd-project/radvd/issues
  *
  */
 
@@ -19,8 +19,6 @@
 #include "defaults.h"
 #include "includes.h"
 #include "log.h"
-
-#define CONTACT_EMAIL "Reuben Hawkins <reubenhwk@gmail.com>"
 
 extern int sock;
 
@@ -152,6 +150,7 @@ struct AdvPrefix {
 
 	int AdvOnLinkFlag;
 	int AdvAutonomousFlag;
+	int AdvDHCPv6PDPreferredFlag;
 	uint32_t AdvValidLifetime;
 	uint32_t AdvPreferredLifetime;
 	int DeprecatePrefixFlag;
@@ -381,6 +380,7 @@ struct safe_buffer_list *new_safe_buffer_list(void);
 void safe_buffer_list_free(struct safe_buffer_list *sbl);
 struct safe_buffer_list *safe_buffer_list_append(struct safe_buffer_list *sbl);
 void safe_buffer_list_to_safe_buffer(struct safe_buffer_list *sbl, struct safe_buffer *sb);
+int drop_root_privileges(const char *);
 
 /* privsep.c */
 int privsep_interface_curhlim(const char *iface, uint32_t hlim);

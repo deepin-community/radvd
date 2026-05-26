@@ -5,7 +5,7 @@
 
 Summary: A Router Advertisement daemon
 Name: radvd
-Version: 2.20
+Version: 2.21
 Release: 1
 # The code includes the advertising clause, so it's GPL-incompatible
 License: BSD with advertising
