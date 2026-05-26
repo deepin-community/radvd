@@ -9,7 +9,7 @@
  *
  *   The license which is distributed with this software in the file COPYRIGHT
  *   applies to this software. If your distribution is missing this file, you
- *   may request it from <reubenhwk@gmail.com>.
+ *   may request it from https://github.com/radvd-project/radvd/issues
  *
  */
 
@@ -74,6 +74,7 @@ RemoveAdvOnExit		{ return T_RemoveAdvOnExit; }
 
 AdvOnLink		{ return T_AdvOnLink; }
 AdvAutonomous		{ return T_AdvAutonomous; }
+AdvDHCPv6PDPreferred	{ return T_AdvDHCPv6PDPreferred; }
 AdvValidLifetime	{ return T_AdvValidLifetime; }
 AdvPreferredLifetime	{ return T_AdvPreferredLifetime; }
 DeprecatePrefix		{ return T_DeprecatePrefix; }

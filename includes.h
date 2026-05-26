@@ -8,7 +8,7 @@
  *
  *   The license which is distributed with this software in the file COPYRIGHT
  *   applies to this software. If your distribution is missing this file, you
- *   may request it from <reubenhwk@gmail.com>.
+ *   may request it from https://github.com/radvd-project/radvd/issues
  *
  */
 
@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef __FreeBSD__
+#ifndef HAVE_STRLCPY
 #include <bsd/string.h> // strlcpy
 #endif
 #include <syslog.h>

@@ -9,7 +9,7 @@
 .\"
 .\"   The license which is distributed with this software in the file COPYRIGHT
 .\"   applies to this software. If your distribution is missing this file, you
-.\"   may request it from <reubenhwk@gmail.com>.
+.\"   may request it from https://github.com/radvd-project/radvd/issues
 .\"
 .\"
 .\"
@@ -20,6 +20,7 @@ radvdump \- dump router advertisements
 .B radvdump
 .B "[ \-vhfe ]"
 .BI "[ \-d " debuglevel " ]"
+.BI "[ \-u " username " ]"
 
 .SH DESCRIPTION
 .B radvdump
@@ -62,6 +63,15 @@ debugging level of 0 completely turns off debugging.
 
 The default debugging level is 0.
 
+.TP
+.BR "\-u " username, " \-\-username " username
+If specified, drops root privileges and changes user ID to
+.I username
+and group ID to the primary group of
+.IR username .
+This is recommended for security reasons.
+Defaults to "nobody", pass "" or "root" to not drop privileges by default.
+
 .SH FILES
 
 .nf
@@ -70,7 +80,7 @@ The default debugging level is 0.
 .SH BUGS
 
 There certainly are some bugs. If you find them or have other
-suggestions please contact Reuben Hawkins <reubenhwk@gmail.com>.
+suggestions please send to https://github.com/radvd-project/radvd/issues
 
 .SH "SEE ALSO"
 

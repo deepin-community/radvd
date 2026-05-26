@@ -1,21 +1,22 @@
 dnl
 dnl
 dnl   Authors:
-dnl    Lars Fenneberg		<lf@elemental.net>	 
+dnl    Lars Fenneberg		<lf@elemental.net>
+dnl    Robin H. Johnson		<robbat2@gentoo.org>
 dnl
-dnl   This software is Copyright 1996-2000 by the above mentioned author(s), 
+dnl   This software is Copyright 1996-2026 by the above mentioned author(s)
 dnl   All Rights Reserved.
 dnl
 dnl   The license which is distributed with this software in the file COPYRIGHT
 dnl   applies to this software. If your distribution is missing this file, you
-dnl   may request it from <reubenhwk@gmail.com>.
+dnl   may request it from https://github.com/radvd-project/radvd/issues
 dnl
 dnl
 
 dnl If adding rcX to version, be sure to separate with a '-' 
-AC_INIT(radvd, [2.20])
+AC_INIT([radvd],[2.21])
 AC_CONFIG_SRCDIR(radvd.c)
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES(yes)])
@@ -55,21 +56,30 @@ AC_ARG_WITH([stack-protector], AS_HELP_STRING([--without-stack-protector], [Buil
 AM_CONDITIONAL(HAVE_STACK_PROTECTOR, test x"$with_stack_protector" = xyes)
 
 AC_ARG_WITH([check], AS_HELP_STRING([--without-check], [Build without check unit testing framework]),[],[with_check=no])
+# AC_ARG_WITH provides HAVE_CHECK*; but that does not say if the library is present
+check_version=0.9.4
 AS_IF([test "x$with_check" = "xyes"], [
-    AS_IF([test "x$arch" = "xlinux"], [
-        PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
-    ])
+	# only check_all gets linked; NOT radvd / radvdump
+	# PKG_CHECK_MODULES's default behavior does not export any variable that
+	# says if the module is present or not.  $pkg_cv_CHECK_{CFLAGS,LIBS} are
+	# also taken from either env or package, but the package can have them
+	# empty, so we must define the true/false.
+	# See https://autotools.info/pkgconfig/pkg_check_modules.html
+	PKG_CHECK_MODULES([CHECK], [check >= ${check_version}], [found_yes=yes], [found_check=no])
 ])
 AM_CONDITIONAL(HAVE_CHECK, test x"$with_check" = xyes)
+if test "x$found_check" = xno && test "x$with_check" = xyes; then
+	AC_MSG_ERROR("check >= ${check_version} required but not found")
+fi
 
 dnl Determine of netlink is available
 AC_MSG_CHECKING(netlink)
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <asm/types.h>
 #include <sys/socket.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
-],[
+]], [[
 int
 main(int argc, char * argv[])
 {
@@ -83,7 +93,7 @@ main(int argc, char * argv[])
 
         return 0;
 }
-],[
+]])],[
 AC_DEFINE(HAVE_NETLINK, 1, [Linux netlink])
 CONDITIONAL_SOURCES=netlink.${OBJEXT}
 AC_MSG_RESULT(yes)
@@ -93,8 +103,23 @@ AC_MSG_RESULT(no)
 
 dnl clock_gettime is in librt for glibc <2.17
 AC_SEARCH_LIBS(clock_gettime, rt)
-dnl strlcpy is in libbsd
-AC_SEARCH_LIBS(strlcpy, bsd)
+
+AC_CHECK_FUNCS(strlcpy, found_strlcpy=yes, found_strlcpy=no)
+if test "x$found_strlcpy" = xno; then
+	dnl check libbsd for strlcpy
+	PKG_CHECK_MODULES([BSD], [libbsd >= 0])
+	AC_SEARCH_LIBS(strlcpy, bsd,
+					[
+						found_bsd_strlcpy=yes
+						CFLAGS="$BSD_CFLAGS $CFLAGS"
+						LIBS="$BSD_LIBS $LIBS"
+					],
+					found_bsd_strlcpy=no)
+fi
+
+if test "x$found_strlcpy" = xno && test "x$found_bsd_strlcpy" = xno; then
+	AC_MSG_ERROR(cannot find strlcpy - upgrade your libc or install libbsd)
+fi
 
 dnl Needed for normal compile
 AC_PROG_INSTALL
@@ -109,7 +134,7 @@ fi
 dnl Not needed
 AC_PATH_PROG(LN, ln)
 AC_PROG_YACC
-AM_PROG_LEX
+AM_PROG_LEX(noyywrap)
 AC_PATH_PROG(TAR, tar)
 AC_PATH_PROG(GZIP, gzip)
 
@@ -178,21 +203,43 @@ AC_HEADER_TIME
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING(whether struct sockaddr_in6 has sin6_scope_id)
-AC_TRY_COMPILE([#include <stdint.h>
-#include <sys/types.h>
-#include <netinet/in.h>], [
-static struct sockaddr_in6 ac_sin6;
-uint32_t ac_size = sizeof (ac_sin6.sin6_scope_id);
-], [AC_MSG_RESULT(yes); AC_DEFINE([HAVE_SIN6_SCOPE_ID],
-1, [whether struct sockaddr_in6 has sin6_scope_id])],
-AC_MSG_RESULT(no))
+AC_COMPILE_IFELSE(
+	[AC_LANG_PROGRAM([[
+		#include <stdint.h>
+		#include <sys/types.h>
+		#include <netinet/in.h>
+	]], [[
+		static struct sockaddr_in6 ac_sin6;
+		uint32_t ac_size = sizeof (ac_sin6.sin6_scope_id);
+	]])],
+	[
+		AC_MSG_RESULT(yes);
+		AC_DEFINE(
+			[HAVE_SIN6_SCOPE_ID],
+			1,
+			[whether struct sockaddr_in6 has sin6_scope_id]
+			)
+	],
+	[AC_MSG_RESULT(no)]
+)
 
 AC_MSG_CHECKING(whether struct in6_addr has u6_addrXX and defines s6_addrXX)
-AC_TRY_COMPILE([#include <stdint.h>
-#include <netinet/in.h>], [static struct in6_addr in6_u;
-uint16_t u =  in6_u.s6_addr16[0];], [AC_MSG_RESULT(yes); AC_DEFINE([HAVE_IN6_ADDR_S6_ADDR],
-1, [whether struct in6_addr has u6_addrXX and defines s6_addrXX])],
-AC_MSG_RESULT(no))
+AC_COMPILE_IFELSE(
+	[AC_LANG_PROGRAM(
+		[[
+			#include <stdint.h>
+			#include <netinet/in.h>
+		]], [[
+			static struct in6_addr in6_u;
+			uint16_t u =  in6_u.s6_addr16[0];
+		]]
+	)],
+	[
+		AC_MSG_RESULT(yes);
+		AC_DEFINE([HAVE_IN6_ADDR_S6_ADDR], 1, [whether struct in6_addr has u6_addrXX and defines s6_addrXX])
+	],
+	[AC_MSG_RESULT(no)]
+)
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(getopt_long)
@@ -204,6 +251,7 @@ if test x${arch} = xlinux ; then
 	CONDITIONAL_SOURCES="privsep-${arch}.${OBJEXT} ${CONDITIONAL_SOURCES}"
 	AC_DEFINE(USE_PRIVSEP, 1, [Use privsep])
 fi
+AC_DEFINE([CONTACT_EMAIL],["https://github.com/radvd-project/radvd/issues"],[Where to report problems, features etc.])
 AC_SUBST(CONDITIONAL_SOURCES)
 
 AC_SUBST(VERSION)
@@ -247,12 +295,12 @@ AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
 AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" != "xno"])
 
 AM_CONFIG_HEADER(config.h)
-AC_OUTPUT(
-	Makefile \
+AC_CONFIG_FILES([Makefile \
 	radvd.service \
 	redhat/systemd/radvd.spec \
 	redhat/SysV/radvd.spec \
-)
+])
+AC_OUTPUT
 
 cat << EOF
 

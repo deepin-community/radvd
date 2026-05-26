@@ -8,7 +8,7 @@
  *
  *   The license which is distributed with this software in the file COPYRIGHT
  *   applies to this software. If your distribution is missing this file, you
- *   may request it from <reubenhwk@gmail.com>.
+ *   may request it from https://github.com/radvd-project/radvd/issues
  *
  */
 
@@ -124,6 +124,7 @@ void prefix_init_defaults(struct AdvPrefix *prefix)
 	prefix->AdvOnLinkFlag = DFLT_AdvOnLinkFlag;
 	prefix->AdvAutonomousFlag = DFLT_AdvAutonomousFlag;
 	prefix->AdvRouterAddr = DFLT_AdvRouterAddr;
+	prefix->AdvDHCPv6PDPreferredFlag = DFLT_AdvDHCPv6PDPreferredFlag;
 	prefix->AdvValidLifetime = DFLT_AdvValidLifetime;
 	prefix->AdvPreferredLifetime = DFLT_AdvPreferredLifetime;
 	prefix->DeprecatePrefixFlag = DFLT_DeprecatePrefixFlag;

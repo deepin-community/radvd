@@ -8,7 +8,7 @@
  *
  *   The license which is distributed with this software in the file COPYRIGHT
  *   applies to this software. If your distribution is missing this file, you
- *   may request it from <reubenhwk@gmail.com>.
+ *   may request it from https://github.com/radvd-project/radvd/issues
  *
  */
 
@@ -20,8 +20,7 @@
 #include "radvd.h"
 
 /* maximum message size for incoming and outgoing RSs and RAs */
-#define MSG_SIZE_RECV 1500
-#define MSG_SIZE_SEND 1452
+#define MSG_SIZE_RECV ((64 * 1024)-1) // Largest possible IPv6 packet size without Jumbograms
 #define RFC2460_MIN_MTU 1280 /* RFC2460 5. Packet Size Issues: lowest valid MTU supported by IPv6 */
 
 #define MAX2(X, Y) (((X) >= (Y)) ? (X) : (Y))
@@ -61,6 +60,7 @@
 #define DFLT_AdvOnLinkFlag 1
 #define DFLT_AdvPreferredLifetime 14400 /* seconds */
 #define DFLT_AdvAutonomousFlag 1
+#define DFLT_AdvDHCPv6PDPreferredFlag 0
 #define DFLT_DeprecatePrefixFlag 0
 #define DFLT_DecrementLifetimesFlag 0
 
@@ -128,16 +128,16 @@
 #define MIN_RANDOM_FACTOR (1.0 / 2.0)
 #define MAX_RANDOM_FACTOR (3.0 / 2.0)
 
-/* MAX and MIN (RFC4861), Mobile IPv6 extensions will override if in use */
+/* MAX and MIN (RFC4861 and RFC8316), Mobile IPv6 extensions will override if in use */
 
 #define MIN_MaxRtrAdvInterval 4
-#define MAX_MaxRtrAdvInterval 1800
+#define MAX_MaxRtrAdvInterval 65535 /* respecting RFC8316 Section 4 */
 
 #define MIN_MinRtrAdvInterval 3
 #define MAX_MinRtrAdvInterval(iface) (0.75 * (iface)->MaxRtrAdvInterval)
 
 #define MIN_AdvDefaultLifetime(iface) (MAX2(1, (iface)->MaxRtrAdvInterval))
-#define MAX_AdvDefaultLifetime 9000
+#define MAX_AdvDefaultLifetime 65535 /* respecting RFC8316 Section 4 */
 
 #define MIN_AdvLinkMTU RFC2460_MIN_MTU
 #define MAX_AdvLinkMTU 131072
@@ -234,6 +234,9 @@ struct nd_opt_dnssl_info_local {
 #endif
 #ifndef ND_OPT_PI_FLAG_RADDR
 #define ND_OPT_PI_FLAG_RADDR 0x20
+#endif
+#ifndef ND_OPT_PI_FLAG_DHCPv6_PD_PREF
+#define ND_OPT_PI_FLAG_DHCPv6_PD_PREF 0x10
 #endif
 #ifndef ND_OPT_RDNSSI_FLAG_S
 #if BYTE_ORDER == BIG_ENDIAN
