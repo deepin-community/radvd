@@ -1,6 +1,11 @@
-version=3
-opts=uversionmangle=s/\.(tar.*|tgz|zip|gz|bz2)$//i\
-,dversionmangle=s/[-.+~]?(cvs|svn|git|snapshot|pre|hg)(.*)$//i\
-,pgpsigurlmangle=s/$/.asc/\
-,pasv\
- http://v6web.litech.org/radvd/dist/ (?:.*/)?radvd-?_?([\d+\.]+|\d+)\.(tar.*|tgz|zip|gz|bz2|) debian uupdate
+version=4
+opts="\
+    compression=xz, \
+    pgpsigurlmangle=s/$/.asc/, \
+    dversionmangle=s/\+(?:git)?[0-9]*(?:\+g[0-9a-f]*)//, \
+    downloadurlmangle=s#/tag/#/download/#;s#(v?@ANY_VERSION@)$#$1/@PACKAGE@-$2.tar.xz#, \
+    filenamemangle=s#v?@ANY_VERSION@#@PACKAGE@-$1.tar.xz#" \
+https://github.com/radvd-project/@PACKAGE@/tags .*/releases/tag/v?@ANY_VERSION@
+
+# Yes, that is probably too complex, sorry for it.
+# Note to my future myself:  Make an attempt to have a less scary look watch file ...

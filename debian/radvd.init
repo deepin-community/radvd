@@ -22,6 +22,7 @@ PROC_SYS_IP6_FORWARDING=/proc/sys/net/ipv6/conf/all/forwarding
 . /lib/lsb/init-functions
 
 test -x $DAEMON || exit 0
+test -f /etc/default/radvd && . /etc/default/radvd
 
 set -e
 

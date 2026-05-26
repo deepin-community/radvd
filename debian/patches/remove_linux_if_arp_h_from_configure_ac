@@ -12,9 +12,11 @@ Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=864269
  Reviewed-by: name and email of a reviewer, optional
 Last-Update: 2017-06-08
 
---- a/configure.ac
-+++ b/configure.ac
-@@ -156,7 +156,6 @@ AC_HEADER_STDC
+Index: radvd/configure.ac
+===================================================================
+--- radvd.orig/configure.ac
++++ radvd/configure.ac
+@@ -163,7 +163,6 @@ AC_HEADER_STDC
  AC_CHECK_HEADERS( \
  	getopt.h \
  	ifaddrs.h \
